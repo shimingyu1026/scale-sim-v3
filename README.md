@@ -209,5 +209,3 @@ Dev and maintainers:
 Advisors
 * Ananda Samajdar
 * Tushar Krishna
-
-

@@ -44,9 +44,9 @@ class operand_matrix(object):
         self.matrix_offset_arr = [0, 10000000, 20000000]
 
         # Address matrices
-        self.ifmap_addr_matrix = np.ones((self.ofmap_px_per_filt, self.conv_window_size), dtype=int)
-        self.filter_addr_matrix = np.ones((self.conv_window_size, self.num_filters), dtype=int)
-        self.ofmap_addr_matrix = np.ones((self.ofmap_px_per_filt, self.num_filters), dtype=int)
+        self.ifmap_addr_matrix = np.ones((self.ofmap_px_per_filt, self.conv_window_size), dtype=np.int)
+        self.filter_addr_matrix = np.ones((self.conv_window_size, self.num_filters), dtype=np.int)
+        self.ofmap_addr_matrix = np.ones((self.ofmap_px_per_filt, self.num_filters), dtype=np.int)
 
         # Sparsity matrices
         self.sparse_filter_array = np.ones((self.conv_window_size, self.num_filters), dtype=int)
@@ -197,7 +197,6 @@ class operand_matrix(object):
         Method to calculate the address of an IFMAP element.
         """
         offset = self.ifmap_offset
-        ifmap_rows = self.ifmap_rows
         ifmap_cols = self.ifmap_cols
         filter_col = self.filter_cols
         r_stride = self.row_stride
@@ -205,12 +204,13 @@ class operand_matrix(object):
         Ew = self.ofmap_cols
         channel = self.num_input_channels
 
-        ofmap_row, ofmap_col = np.divmod(i, Ew)
-        i_row, i_col = ofmap_row * r_stride, ofmap_col * c_stride
-        window_addr = (i_row * ifmap_cols + i_col) * channel
+        # Calculate the row and col in the Eh X Ew mat
+        ofmap_row = int(math.floor(i / Ew))
+        ofmap_col = int(i % Ew)
 
-        c_row, k = np.divmod(j, filter_col * channel)
-        c_col, c_ch = np.divmod(k, channel)
+        # Change this to corresponding ifmap row col for the start of the conv window
+        i_row = ofmap_row * r_stride
+        i_col = ofmap_col * c_stride
 
         valid_indices = np.logical_and(c_row + i_row < ifmap_rows, c_col + i_col < ifmap_cols)
         ifmap_px_addr = np.full(i.shape, -1)
@@ -219,6 +219,16 @@ class operand_matrix(object):
                                channel + c_ch[valid_indices]
             ifmap_px_addr[valid_indices] = internal_address + window_addr[valid_indices] + offset
 
+        # Calculate the row and col in the conv window
+        c_row = int(math.floor(j / (filter_col * channel)))
+        k = int(j % (filter_col * channel))
+        c_col = int(math.floor(k / channel))
+        c_ch = int(k % channel)
+        if c_row + i_row >= self.ifmap_rows or c_col + i_col >= self.ifmap_cols:  # for padded address
+            ifmap_px_addr = -1
+        else:
+            internal_address = c_row * (ifmap_cols * channel) + c_col * channel + c_ch  # Address inside conv window
+            ifmap_px_addr = internal_address + window_addr + offset  # Global address
         return ifmap_px_addr
 
     # creates the ofmap operand
