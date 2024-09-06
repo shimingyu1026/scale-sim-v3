@@ -183,7 +183,6 @@ class scalesim:
         print("topology file path: \t" + self.config.get_topology_path())
         print("layout file path: \t" + self.config.get_layout_path())
         print("CSV file path: \t" + self.config.get_topology_path())
-        print("Number of Remote Memory Banks: \t" + str(self.config.get_mem_banks()))
 
         if self.config.use_user_dram_bandwidth():
             print("Bandwidth: \t" + self.config.get_bandwidths_as_string())

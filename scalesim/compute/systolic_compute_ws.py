@@ -71,7 +71,6 @@ class systolic_compute_ws:
         # Used PE array
         self.row_used_fold = []
         self.col_used_fold = []
-
     #
     def set_params(self,
                    config_obj=cfg(),
@@ -247,8 +246,6 @@ class systolic_compute_ws:
         inter_fold_gap_prefix_mat = np.ones((inter_fold_gap_prefix, self.arr_row)) * -1
 
         inter_fold_gap_suffix = self.arr_col - 1
-        # inter_fold_gap_suffix = self.arr_row + self.arr_col - 2
-        #The last input needs self.arr_row - 1 cycles to reach the last column of PE array and then self.arr_col - 1 cycles to reduce along the last column.
 
         inter_fold_gap_suffix_mat = np.ones((inter_fold_gap_suffix, self.arr_row)) * -1
 
@@ -616,6 +613,7 @@ class systolic_compute_ws:
         """
         assert self.demand_mat_ready_flag, 'Computes not ready yet'
         return self.ofmap_writes
+
     
     # get pe action counts
     def get_pe_action_count(self):
@@ -675,7 +673,6 @@ class systolic_compute_ws:
                 ofmap_read_action_count += ofmap_read_action_count_fold
         return ofmap_write_action_count, ofmap_read_action_count
 
-    
 #
 def skew_matrix(input_matrix_np):
     """
@@ -693,28 +690,8 @@ def skew_matrix(input_matrix_np):
 
     out_matrix_np = np.full((rows + cols - 1, cols), -1, dtype=input_matrix_np.dtype)
 
-    out_matrix_np = np.zeros((1,1))
     for c in range(cols):
-        if c == 0:
-            down_padding = -1 * np.ones((cols-1, 1))
-            mat_col = input_matrix_np[:,c].reshape((rows,1))
-            out_matrix_np = np.concatenate((mat_col, down_padding), axis=0)
-
-        else:
-            if c == cols -1:
-                up_padding = -1 * np.ones((cols-1, 1))
-                mat_col = input_matrix_np[:, c].reshape((rows, 1))
-
-                this_col = np.concatenate((up_padding, mat_col), axis=0)
-                out_matrix_np = np.concatenate((out_matrix_np, this_col), axis=1)
-
-            else:
-                up_padding = -1 * np.ones((c, 1))
-                mat_col = input_matrix_np[:, c].reshape((rows, 1))
-                down_padding = -1 * np.ones((cols - c-1, 1))
-
-                this_col = np.concatenate((up_padding, mat_col, down_padding), axis=0)
-                out_matrix_np = np.concatenate((out_matrix_np, this_col), axis=1)
+        out_matrix_np[c:c + rows, c] = input_matrix_np[:, c]
 
     return out_matrix_np
 

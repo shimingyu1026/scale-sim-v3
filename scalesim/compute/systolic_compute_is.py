@@ -63,7 +63,6 @@ class systolic_compute_is:
         # Used PE array
         self.row_used_fold = []
         self.col_used_fold = []
-
     #
     def set_params(self,
                    config_obj=cfg(),
@@ -283,6 +282,7 @@ class systolic_compute_is:
 
                 self.row_used_fold.append(row_used)
                 self.col_used_fold.append(col_used)
+
         # Skew is not needed in IFMAP for IS
 
     #
@@ -572,27 +572,7 @@ def skew_matrix(input_matrix_np):
 
     out_matrix_np = np.full((rows + cols - 1, cols), -1, dtype=input_matrix_np.dtype)
 
-    out_matrix_np = np.zeros((1,1))
     for c in range(cols):
-        if c == 0:
-            down_padding = -1 * np.ones((cols-1, 1))
-            mat_col = input_matrix_np[:,c].reshape((rows,1))
-            out_matrix_np = np.concatenate((mat_col, down_padding), axis=0)
-
-        else:
-            if c == cols -1:
-                up_padding = -1 * np.ones((cols-1, 1))
-                mat_col = input_matrix_np[:, c].reshape((rows, 1))
-
-                this_col = np.concatenate((up_padding, mat_col), axis=0)
-                out_matrix_np = np.concatenate((out_matrix_np, this_col), axis=1)
-
-            else:
-                up_padding = -1 * np.ones((c, 1))
-                mat_col = input_matrix_np[:, c].reshape((rows, 1))
-                down_padding = -1 * np.ones((cols - c-1, 1))
-
-                this_col = np.concatenate((up_padding, mat_col, down_padding), axis=0)
-                out_matrix_np = np.concatenate((out_matrix_np, this_col), axis=1)
+        out_matrix_np[c:c + rows, c] = input_matrix_np[:, c]
 
     return out_matrix_np
