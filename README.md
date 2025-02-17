@@ -1,9 +1,11 @@
 # Systolic CNN AcceLErator Simulator (SCALE Sim) v3
 
 <!-- [![Documentation Status](https://readthedocs.org/projects/scale-sim-project/badge/?version=latest)](https://scale-sim-project.readthedocs.io/en/latest/?badge=latest) -->
+# SCALE-Sim + Accerlegy Integration for Enabling Energy and Power Estimation of Systolic CNN-Accelerator
 
-SCALE Sim is a simulator for systolic array based accelerators for Convolution, Feed Forward, and any layer that uses GEMMs.
-This is a refreshed version of the simulator with feature enhancements, restructured code to aid feature additions, and ease of distribution.
+## Requirement
+
+### Install SCALE-Sim
 
 ![scalesim v3 overview](https://github.com/scalesim-project/scale-sim-v3/blob/main/documentation/resources/v3_overview.png "scalesim v3 overview")
 
@@ -18,31 +20,56 @@ SCALE-Sim v3 includes several advanced features:
 3. **Accelergy Integration**: Energy and power estimation capabilities
 4. **Layout Support**: Advanced memory layout configurations
 5. **Multi-core Support**: Support for multi-core simulations
+Please install SCALE-Sim following the instructions in the main branch: https://github.com/scalesim-project/scale-sim-v2/tree/main 
 
-## Getting started in 30 seconds
+### Install Accelergy
 
-### *Installing the package*
+Please install Accelergy following the instructions in their github repo
+https://github.com/Accelergy-Project/accelergy 
+
+For more accurate estimation, please install accelergy-plug-ins for 3rd party, technology-based estimators
+CACTI - https://github.com/Accelergy-Project/accelergy-cacti-plug-in.git 
+Aladdin - https://github.com/Accelergy-Project/accelergy-aladdin-plug-in.git
 
 Getting started is simple! SCALE-Sim is completely written in python and could be installed from source.
+## Run
 
-You can install SCALE-Sim in your environment using the following command
+Run the following command:
 
 ```$ pip3 install <path-to-scalesim-v3-folder>```
 
 If you are a developer that will modify scale-sim during your usage, please install it with `-e` flag, which will create a symbolic link instead of replicating scalesim in your environment, thus modification of scale-sim code can be syncronized simultaneously
 
 ```$ pip3 install -e <path-to-scalesim-v3-folder>```
+```$ cd rundir-accelergy ```
 
-### *Launching a run*
+```$ ./run_all.sh -c <path_to_config_file> -t <path_to_topology_file> -p <path_to_scale-sim_log_dir> -o <path_to_output_dir> ```
+
+For Example: 
+
+```$ ./run_all.sh -c ../configs/scale.cfg -t ../topologies/conv_nets/test.csv -p ../test_runs/ -o ./output ```
 
 After installing SCALE-Sim, it can be run by using the ```scalesim.scale``` and providing the paths to the architecture configuration, and the topology descriptor csv file.
 
 ```$ python3 -m scalesim.scale -c <path_to_config_file> -t <path_to_topology_file> -p <path_to_output_log_dir>```
+## Tool Inputs
+### Configuration File
+The configuration file is used to specify the architecture and run parameters for the simulations. 
 
-### *Running from source*
+Built based upon SCALE-Sim, we add additional parameters for action count extraction.
+* SRAM_row_size: the size of the row buffer (block) that each SRAM access loads
+* SRAM_bank_size: temporal capacity for the memory to keep previously-accessed data (with more than one row buffer per bank)
+* DRAM_row_size, _bank_size: same concept as SRAM
 
-The above method uses the installed package for running the simulator.
-In cases where you would like to run directly from the source, the following command should be used instead.
+The rest of the parameters are the same as (https://github.com/scalesim-project/scale-sim-v2).
+
+### Topology File
+The topology file is a CSV file which decribes the layers of the workload topology.
+For more details, please refer to (https://github.com/scalesim-project/scale-sim-v2) 
+
+### Additional compound components for Accelergy
+If any other kinds fo compound componetns are to be included, please add them to ```./accelergy_input/components```
+For more details, please refer to (http://accelergy.mit.edu/)
 
 ```$ PYTHONPATH=$PYTHONPATH:<scale_sim_repo_root> python3 <scale_sim_repo_root>/scalesim/scale.py -c <path_to_config_file> -t <path_to_topology_file>```
 
@@ -175,6 +202,16 @@ If you found this tool useful, please use the following bibtex to cite us
 }
 
 ```
+## Result
+### Files
+In the output directory,
+* scale_sim_out_<run_name> contains performance results in .csv format. Summary in ```COMPUTE_REPORT.csv```
+* accelergy_out_<run_name> contains energy estimation results in .yaml format. Summary in  ```energy_estimation.yaml```
+More details can be found from each framework's github link.
+
+### Visualization
+```$ jupyter-notebook gen_plot.ipynb``` 
+will also help to anaylize the result. Currently set to the example case (see the Single Run section).
 
 ## Contributing to the project
 
