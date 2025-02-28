@@ -454,6 +454,10 @@ class systolic_compute_ws:
         for fc in range(self.col_fold):
             # for fr in range(self.row_fold):
             for fr in range(self.row_fold_demand_matrices):
+                row_start_id = fr * self.arr_row
+                row_end_idx = min(row_start_id + self.arr_row, self.Sr)
+                row_delta = self.arr_row - (row_end_idx - row_start_id)
+                
                 col_start_id = fc * self.arr_col
                 col_end_idx = min(col_start_id + self.arr_col, self.Sc) # self.Sc
                 col_delta = self.arr_col - (col_end_idx - col_start_id)
@@ -463,6 +467,13 @@ class systolic_compute_ws:
 
                 # Adding null requests when there is under utilization ie. no mapping along a few
                 # rows or cols
+                # Calculate the mapping efficiency
+                row_used = min(self.arr_row, row_end_idx - row_start_id)
+                col_used = min(self.arr_col, col_end_idx - col_start_id)
+                mac_used = row_used * col_used
+                mapping_eff_this_fold = mac_used / (self.arr_row * self.arr_col)
+
+                # Adding null requests when there is under utilization ie. no mapping along a few rows or cols
                 if col_delta > 0:
                     null_req_mat = np.ones((this_fold_demand.shape[0], col_delta)) * -1
                     this_fold_demand = np.concatenate((this_fold_demand, null_req_mat), axis=1)
@@ -483,6 +494,9 @@ class systolic_compute_ws:
                 #    self.ofmap_demand_matrix = \
                 #       np.concatenate((self.ofmap_demand_matrix, this_fold_demand), axis=0)
 
+                #    self.ofmap_demand_matrix = np.concatenate((self.ofmap_demand_matrix, this_fold_demand), axis=0)
+                self.row_used_fold.append(row_used)
+                self.col_used_fold.append(col_used)
         self.ofmap_demand_matrix = np.concatenate(ofmap_demand_matrix_list)
 
         if False:
