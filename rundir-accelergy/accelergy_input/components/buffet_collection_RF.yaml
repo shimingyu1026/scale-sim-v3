@@ -40,10 +40,11 @@ compound_components:
                   data_delta: data_delta
           - name: storage
             actions:
-              - name: write
+              - name: access
                 arguments:
                   data_delta: data_delta
                   address_delta: address_delta
+                  action_latency_cycles: 1
       - name: read
         arguments:
           data_delta: 0..1
@@ -57,10 +58,11 @@ compound_components:
                   data_delta: data_delta
           - name: storage
             actions:
-              - name: read
+              - name: access
                 arguments:
                   data_delta: data_delta
                   address_delta: address_delta
+                  action_latency_cycles: 1
       - name: update
         arguments:
           data_delta: 0..1
@@ -74,10 +76,11 @@ compound_components:
                   data_delta: data_delta
           - name: storage
             actions:
-              - name: write
+              - name: access
                 arguments:
                   data_delta: data_delta
                   address_delta: address_delta
+                  action_latency_cycles: 1
       - name: idle
         subcomponents:
           - name: buffet[0..n_buffets-1]
@@ -85,4 +88,8 @@ compound_components:
               - name: idle
           - name: storage
             actions:
-              - name: idle
+              - name: leak
+                arguments:
+                  data_delta: 0
+                  address_delta: 0
+                  action_latency_cycles: 1

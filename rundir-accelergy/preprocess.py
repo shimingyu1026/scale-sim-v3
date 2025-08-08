@@ -9,13 +9,13 @@ def build_PE_Array(ArrayHeight, ArrayWidth):
     acclg_pe['name'] = 'PE[0..'+str(num_pes-1)+']'
     acclg_pe['attributes'] = {'memory_width': 16}
     
-    alu = {'name':'mac', 'class':'intmac','attributes':{'datawidth':8}}
+    alu = {'name':'mac', 'class':'custom_intmac','attributes':{'datawidth':8}}
     ifm_rf_attr = {'depth':1,'n_rdwr_ports':1,'width':1}
-    ifm_spad  = {'name':'ifmap_spad', 'class':'regfile','attributes':ifm_rf_attr}
+    ifm_spad  = {'name':'ifmap_spad', 'class':'custom_regfile','attributes':ifm_rf_attr}
     wgt_rf_attr = {'depth':1,'n_rdwr_ports':1,'width':1}
-    wgt_spad = {'name':'weights_spad', 'class':'regfile','attributes':wgt_rf_attr}
+    wgt_spad = {'name':'weights_spad', 'class':'custom_regfile','attributes':wgt_rf_attr}
     psum_rf_attr = {'depth':1,'n_rdwr_ports':1,'width':1}
-    psum_spad = {'name':'psum_spad', 'class':'regfile','attributes':psum_rf_attr}
+    psum_spad = {'name':'psum_spad', 'class':'custom_regfile','attributes':psum_rf_attr}
 
     acclg_pe['local'] = [alu, ifm_spad, wgt_spad, psum_spad]
     
@@ -36,7 +36,7 @@ def build_GLB(NameGLB, SramSz, MemoryBanks):
 def build_DRAM(NameDRAM):
     acclg_dram = {}
     acclg_dram['name'] = NameDRAM
-    acclg_dram['class'] = 'DRAM'
+    acclg_dram['class'] = 'custom_DRAM'
     acclg_dram['attributes'] = {'width':32}
 
     return acclg_dram
@@ -157,9 +157,7 @@ if __name__ == '__main__':
         command = "mv ./accelergy_output/"+run_name + "  " + os.path.join(outdir, "accelergy_output_"+run_name)
         fw.writelines(command+'\n\n')
 
-        command = "rm -rf ./accelergy_output" 
-        fw.writelines(command+'\n\n')
+        # command = "rm -rf ./accelergy_output" 
+        # fw.writelines(command+'\n\n')
 
     os.system("chmod 777 ./run_accelergy.sh")
-
-

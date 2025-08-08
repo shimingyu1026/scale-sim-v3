@@ -43,7 +43,9 @@ compound_components:
                   address_delta: address_delta
           - name: address_generators[0]
             actions:
-              - name: count
+              - name: access
+                arguments:
+                  action_latency_cycles: 1
 
       - name: read
         arguments:
@@ -58,7 +60,9 @@ compound_components:
                   address_delta: address_delta
           - name: address_generators[1]
             actions:
-              - name: count
+              - name: access
+                arguments:
+                  action_latency_cycles: 1
 
       - name: update
         arguments:
@@ -73,7 +77,9 @@ compound_components:
                   address_delta: address_delta
           - name: address_generators[2]
             actions:
-            - name: count
+            - name: access
+              arguments:
+                action_latency_cycles: 1
 
       - name: idle
         subcomponents:
@@ -82,4 +88,5 @@ compound_components:
               - name: idle
           - name: address_generators[0..2]
             actions:
-              - name: idle
+              - name: leak
+                
