@@ -1,3 +1,5 @@
+## **Please note that this repository is a legacy version for SCALE-Sim v3 and will not have any external updates unless there is a critical bug. Please post your issues/pull requests to the [main repository](https://github.com/scalesim-project/SCALE-Sim).** ##
+
 # Systolic CNN AcceLErator Simulator (SCALE Sim) v3
 
 <!-- [![Documentation Status](https://readthedocs.org/projects/scale-sim-project/badge/?version=latest)](https://scale-sim-project.readthedocs.io/en/latest/?badge=latest) -->
