@@ -6,7 +6,7 @@ for IFMAP, Filter, and OFMAP operations.
 """
 
 import math
-from turtle import shape
+# from turtle import shape
 import numpy as np
 from tqdm import tqdm
 from scalesim.scale_config import scale_config as cfg
