@@ -7,7 +7,24 @@
 
 ### Install SCALE-Sim
 
-![scalesim v3 overview](https://github.com/scalesim-project/scale-sim-v3/blob/main/documentation/resources/v3_overview.png "scalesim v3 overview")
+```
+git clone git@github.imec.be:HeSPaS/scale-sim-v3.git
+cd scale-sim-v3
+
+## switch to the branch you want to run
+git checkout <branch-name>
+
+# If you are running on the cluster load the python module
+module load lang/Python/3.12.3-GCCcore-13.3.0
+
+# create and activate virtualenv
+python3 -m venv .venv
+source .venv/bin/activate
+#
+pip install .
+```
+
+![scalesim v3 overview](https://github.imec.be/HeSPaS/scale-sim-v3/blob/dev/documentation/resources/v3_overview.png "scalesim v3 overview")
 
 The previous version of the simulator can be found [here](https://github.com/scalesim-project/scale-sim-v2).
 
@@ -23,13 +40,32 @@ SCALE-Sim v3 includes several advanced features:
 Please install SCALE-Sim following the instructions in the main branch: https://github.com/scalesim-project/scale-sim-v2/tree/main 
 
 ### Install Accelergy
+You can install Accelergy following the instructions in their github repo
+https://github.com/Accelergy-Project/accelergy
 
-Please install Accelergy following the instructions in their github repo
-https://github.com/Accelergy-Project/accelergy 
+Else you can run the following steps.
+```
+# Run the following from scale-sim-v3 root
+git clone https://github.com/Accelergy-Project/accelergy.git
+cd accelergy
+pip install .
+```
 
-For more accurate estimation, please install accelergy-plug-ins for 3rd party, technology-based estimators
+You will need the following plugins for energy/area estimation, please install accelergy-plug-ins for 3rd party, technology-based estimators
 CACTI - https://github.com/Accelergy-Project/accelergy-cacti-plug-in.git 
 Aladdin - https://github.com/Accelergy-Project/accelergy-aladdin-plug-in.git
+Table - 
+```
+cd accelergy
+mkdir plugins
+cd plugins
+git clone https://github.com/Accelergy-Project/accelergy-cacti-plug-in.git
+git clone https://github.com/Accelergy-Project/accelergy-aladdin-plug-in.git
+```
+After cloning the plugins follow the installation instructions to install the plugins. You can find them
+in the respective READMEs'.
+
+Once you have installed the plugins you should be able to see them at `<path-to-virtual-env>/share/accelergy`.
 
 Getting started is simple! SCALE-Sim is completely written in python and could be installed from source.
 ## Run
