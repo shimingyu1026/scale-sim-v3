@@ -23,6 +23,8 @@ source .venv/bin/activate
 #
 pip install .
 ```
+!Create a virtualenv as shown above as it's useful later with accelergy installation to keep
+all the packages easy to locate. 
 
 ![scalesim v3 overview](https://github.imec.be/HeSPaS/scale-sim-v3/blob/dev/documentation/resources/v3_overview.png "scalesim v3 overview")
 
@@ -59,7 +61,7 @@ Table -
 cd accelergy
 mkdir plugins
 cd plugins
-git clone https://github.com/Accelergy-Project/accelergy-cacti-plug-in.git
+git clone --recurse-submodules https://github.com/Accelergy-Project/accelergy-cacti-plug-in.git
 git clone https://github.com/Accelergy-Project/accelergy-aladdin-plug-in.git
 ```
 After cloning the plugins follow the installation instructions to install the plugins. You can find them
@@ -67,16 +69,34 @@ in the respective READMEs'.
 
 Once you have installed the plugins you should be able to see them at `<path-to-virtual-env>/share/accelergy`.
 
+Update the `accelergy_config.yaml`. You can find it at `~/.config/accelergy/accelergy_config.yaml`. On the cluster you can find it at `/imec/users/<user-name>/.config/accelergy/accelergy_config.yaml`. You need to update where your estimator plugins are located after the install.
+
+```yaml
+estimator_plugins:
+   - <path-to-your-virtual_env>/share/accelergy/estimation_plugins
+primitive_plugins:
+   - <path-to-your-virtual_env>/share/accelergy/estimation_plugins
+
+## Example on the cluster
+estimator_plug_ins:
+  - /imec/other/csainfra/projectdata/singh16/hespas/scale-sim-v3/.venv/share/accelergy/estimation_plug_ins
+primitive_components:
+  - /imec/other/csainfra/projectdata/singh16/hespas/scale-sim-v3/.venv/share/accelergy/primitive_component_libs
+
+# Example on your local   
+estimator_plug_ins:
+   - /home/singh16/work/hespas/scale-sim-v3/.venv/share/accelergy/estimation_plug_ins
+primitive_components:
+   - /home/singh16/work/hespas/scale-sim-v3/.venv/share/accelergy/primitive_component_libs
+```
+
+
+
 Getting started is simple! SCALE-Sim is completely written in python and could be installed from source.
 ## Run
 
-Run the following command:
-
-```$ pip3 install <path-to-scalesim-v3-folder>```
-
 If you are a developer that will modify scale-sim during your usage, please install it with `-e` flag, which will create a symbolic link instead of replicating scalesim in your environment, thus modification of scale-sim code can be syncronized simultaneously
 
-```$ pip3 install -e <path-to-scalesim-v3-folder>```
 ```$ cd rundir-accelergy ```
 
 ```$ ./run_all.sh -c <path_to_config_file> -t <path_to_topology_file> -p <path_to_scale-sim_log_dir> -o <path_to_output_dir> ```
