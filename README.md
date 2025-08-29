@@ -69,8 +69,9 @@ in the respective READMEs'.
 
 Once you have installed the plugins you should be able to see them at `<path-to-virtual-env>/share/accelergy`.
 
-Update the `accelergy_config.yaml`. You can find it at `~/.config/accelergy/accelergy_config.yaml`. On the cluster you can find it at `/imec/users/<user-name>/.config/accelergy/accelergy_config.yaml`. You need to update where your estimator plugins are located after the install. 
-!If you are unable to locate the file try running `accelergy -h` this should create the file at 
+Update the `accelergy_config.yaml`. You can find it at `~/.config/accelergy/accelergy_config.yaml`.
+
+!If you are unable to locate the file try running `accelergy` this should create the file at 
 the location.
 
 ```yaml
@@ -79,19 +80,12 @@ estimator_plugins:
 primitive_plugins:
    - <path-to-your-virtual_env>/share/accelergy/estimation_plugins
 
-## Example on the cluster
-estimator_plug_ins:
-  - /imec/other/csainfra/projectdata/singh16/hespas/scale-sim-v3/.venv/share/accelergy/estimation_plug_ins
-primitive_components:
-  - /imec/other/csainfra/projectdata/singh16/hespas/scale-sim-v3/.venv/share/accelergy/primitive_component_libs
-
 # Example on your local   
 estimator_plug_ins:
-   - /home/singh16/work/hespas/scale-sim-v3/.venv/share/accelergy/estimation_plug_ins
+   - /home/work/scale-sim-v3/.venv/share/accelergy/estimation_plug_ins
 primitive_components:
-   - /home/singh16/work/hespas/scale-sim-v3/.venv/share/accelergy/primitive_component_libs
+   - /home/work/scale-sim-v3/.venv/share/accelergy/primitive_component_libs
 ```
-
 
 
 Getting started is simple! SCALE-Sim is completely written in python and could be installed from source.
