@@ -69,7 +69,9 @@ in the respective READMEs'.
 
 Once you have installed the plugins you should be able to see them at `<path-to-virtual-env>/share/accelergy`.
 
-Update the `accelergy_config.yaml`. You can find it at `~/.config/accelergy/accelergy_config.yaml`. On the cluster you can find it at `/imec/users/<user-name>/.config/accelergy/accelergy_config.yaml`. You need to update where your estimator plugins are located after the install.
+Update the `accelergy_config.yaml`. You can find it at `~/.config/accelergy/accelergy_config.yaml`. On the cluster you can find it at `/imec/users/<user-name>/.config/accelergy/accelergy_config.yaml`. You need to update where your estimator plugins are located after the install. 
+!If you are unable to locate the file try running `accelergy -h` this should create the file at 
+the location.
 
 ```yaml
 estimator_plugins:

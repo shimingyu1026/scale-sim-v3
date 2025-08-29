@@ -28,7 +28,7 @@ def build_GLB(NameGLB, SramSz, MemoryBanks):
     acclg_glb = {}
     acclg_glb['name'] = NameGLB
     acclg_glb['class'] = 'smartbuffer_SRAM'
-    acclg_glb['attributes'] = {'memory_width':32, 'n_banks':MemoryBanks, 'bank_depth':SramSz ,'memory_depth':'bank_depth * n_banks', 'n_buffets':1}
+    acclg_glb['attributes'] = {'memory_width':32, 'n_banks':MemoryBanks, 'bank_depth':SramSz ,'n_buffets':1,'memory_depth':'bank_depth * n_banks'}
 
     return acclg_glb
 
@@ -113,7 +113,7 @@ if __name__ == '__main__':
 
     # dump to acclg.yaml
     with open('accelergy_input/architecture.yaml', 'w') as fw:
-        data = yaml.safe_dump(acclg, fw)
+        data = yaml.safe_dump(acclg, fw, sort_keys=False)
 
     # prepare command for action count extraction
     scsim_rundir = '../scalesim'
