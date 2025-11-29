@@ -85,10 +85,12 @@ class simulator:
         if not os.path.isdir(self.top_path):
             os.mkdir(self.top_path)
 
+
         report_path = self.top_path + '/' + self.conf.get_run_name()
 
         if not os.path.isdir(report_path):
             os.mkdir(report_path)
+
 
         self.top_path = report_path
 
@@ -101,6 +103,8 @@ class simulator:
                 print('\nRunning Layer ' + str(layer_id))
 
             single_layer_obj.run()
+
+            single_layer_obj.run_energy_model(self.top_path)
 
             if self.verbose:
                 comp_items = single_layer_obj.get_compute_report_items()
@@ -193,7 +197,8 @@ class simulator:
         header += 'SRAM OFMAP Start Cycle, SRAM OFMAP Stop Cycle, SRAM OFMAP Writes, '
         header += 'DRAM IFMAP Start Cycle, DRAM IFMAP Stop Cycle, DRAM IFMAP Reads, '
         header += 'DRAM Filter Start Cycle, DRAM Filter Stop Cycle, DRAM Filter Reads, '
-        header += 'DRAM OFMAP Start Cycle, DRAM OFMAP Stop Cycle, DRAM OFMAP Writes,\n'
+        header += 'DRAM OFMAP Start Cycle, DRAM OFMAP Stop Cycle, DRAM OFMAP Writes, '
+        header += 'IFMAP Write Count, IFMAP Read Count, Filter Write Count, Filter Read Count, OFMAP Write Count, OFMAP Read Count,\n'
         detail_report.write(header)
 
         if self.conf.sparsity_support is True:

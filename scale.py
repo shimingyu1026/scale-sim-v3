@@ -60,4 +60,3 @@ if __name__ == '__main__':
                  input_type_gemm=GEMM_INPUT
                  )
     s.run_scale(top_path=logpath)
-    

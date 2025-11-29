@@ -26,3 +26,4 @@ result_parser.py
 test*
 configs_test
 benchmark_results
+.venv/

@@ -76,6 +76,7 @@ class scale_config:
         # Anand: ISSUE #2. Patch
         section = 'run_presets'
         bw_mode_string = config.get(section, 'InterfaceBandwidth')
+
         if bw_mode_string == 'USER':
             self.use_user_bandwidth = True
         elif bw_mode_string == 'CALC':
@@ -225,7 +226,6 @@ class scale_config:
         with open(conf_file_out, 'w') as configfile:
             config.write(configfile)
 
-    #
     def set_arr_dims(self, rows=1, cols=1):
         """
         Method to set the dimensions of the PE array, with default dimensions set to 1x1.
