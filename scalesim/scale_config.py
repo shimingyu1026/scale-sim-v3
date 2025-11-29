@@ -5,8 +5,6 @@ parameters.
 """
 import configparser as cp
 
-from scalesim.memory_map import memory_map
-
 
 class scale_config:
     """
@@ -79,8 +77,6 @@ class scale_config:
         section = 'run_presets'
         bw_mode_string = config.get(section, 'InterfaceBandwidth')
 
-        ####
-
         if bw_mode_string == 'USER':
             self.use_user_bandwidth = True
         elif bw_mode_string == 'CALC':
@@ -111,7 +107,6 @@ class scale_config:
         self.df = config.get(section, 'Dataflow')
         self.req_buf_sz_rd = int(config.get(section, 'ReadRequestBuffer')) // div_factor
         self.req_buf_sz_wr = int(config.get(section, 'WriteRequestBuffer')) // div_factor
-        self.memory_banks = int(config.get(section, 'MemoryBanks').strip())
 
         layout_section = 'layout'
         self.using_ifmap_custom_layout = config.getboolean(layout_section, 'IfmapCustomLayout')
@@ -127,10 +122,6 @@ class scale_config:
         if self.use_user_bandwidth:
             self.bandwidths = [int(x.strip())
                                for x in config.get(section, 'Bandwidth').strip().split(',')]
-
-            # Anand: ISSUE #12. Fix
-            assert self.memory_banks == len(self.bandwidths), \
-                'In USER mode bandwidths for each memory bank is a required input'
 
         if self.df not in self.valid_df_list:
             print("WARNING: Invalid dataflow")
@@ -470,13 +461,6 @@ class scale_config:
         """
         if self.valid_conf_flag:
             return self.bandwidths
-    def get_mem_banks(self):
-        if self.valid_conf_flag:
-            return self.memory_banks
-
-    def get_mem_map_obj(self):
-        if self.valid_conf_flag:
-            return self.memory_map
 
     def get_bandwidths_as_list(self):
         if self.valid_conf_flag:
