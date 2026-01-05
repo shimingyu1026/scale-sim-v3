@@ -27,3 +27,5 @@ test*
 configs_test
 benchmark_results
 .venv/
+models/
+data/
