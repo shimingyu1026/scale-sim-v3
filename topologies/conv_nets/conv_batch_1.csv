@@ -1,0 +1,2 @@
+Layer name,IFMAP Height,IFMAP Width,Filter Height,Filter Width,Channels,Num Filter,Strides,Batch Size,
+conv1,32,32,3,3,3,16,1,1,

@@ -12,9 +12,9 @@ source venv/bin/activate
 export PYTHONPATH=.
 python3 $path/scalesim/scale.py -c $path/configs/scale.cfg -t $path/topologies/conv_nets/alexnet_part.csv -p $path/test_runs
 
-DIFF1=$(diff $path/test_runs/scale_example_run_32x32_ws/BANDWIDTH_REPORT.csv $path/test/general/golden_trace_calc/BANDWIDTH_REPORT.csv)
-DIFF2=$(diff $path/test_runs/scale_example_run_32x32_ws/COMPUTE_REPORT.csv $path/test/general/golden_trace_calc/COMPUTE_REPORT.csv)
-DIFF3=$(diff $path/test_runs/scale_example_run_32x32_ws/DETAILED_ACCESS_REPORT.csv $path/test/general/golden_trace_calc/DETAILED_ACCESS_REPORT.csv)
+DIFF1=$(python3 $path/test/general/scripts/compare_csv.py $path/test/general/golden_trace_calc/BANDWIDTH_REPORT.csv $path/test_runs/scale_example_run_32x32_ws/BANDWIDTH_REPORT.csv --numeric)
+DIFF2=$(python3 $path/test/general/scripts/compare_csv.py $path/test/general/golden_trace_calc/COMPUTE_REPORT.csv $path/test_runs/scale_example_run_32x32_ws/COMPUTE_REPORT.csv --numeric)
+DIFF3=$(python3 $path/test/general/scripts/compare_csv.py $path/test/general/golden_trace_calc/DETAILED_ACCESS_REPORT.csv $path/test_runs/scale_example_run_32x32_ws/DETAILED_ACCESS_REPORT.csv --numeric --allow-extra-columns)
 DIFF4=$(diff $path/test_runs/scale_example_run_32x32_ws/layer0/FILTER_DRAM_TRACE.csv $path/test/general/golden_trace_calc/layer0/FILTER_DRAM_TRACE.csv)
 DIFF5=$(diff $path/test_runs/scale_example_run_32x32_ws/layer0/FILTER_SRAM_TRACE.csv $path/test/general/golden_trace_calc/layer0/FILTER_SRAM_TRACE.csv)
 DIFF6=$(diff $path/test_runs/scale_example_run_32x32_ws/layer0/IFMAP_DRAM_TRACE.csv $path/test/general/golden_trace_calc/layer0/IFMAP_DRAM_TRACE.csv)

@@ -1,0 +1,3 @@
+layer name, ifmap height, ifmap width, filter height, filter width, channels, num filters, strides, batch size, sparsity,
+conv1, 8, 8, 3, 3, 3, 16, 1, 4, 2:4,
+conv2, 4, 4, 1, 1, 16, 32, 1, 4, 1:4,

@@ -24,6 +24,15 @@ test
 test_benchmark*
 result_parser.py
 test*
+!test/
+!test/test_topology_utils_batch.py
+!test/test_report_batch.py
+!test/test_phase10_smoke.py
 configs_test
 benchmark_results
 .venv/
+.claude/
+BATCH*.md
+tmp/
+AGENTS.md
+INPUT*.md

@@ -1,0 +1,3 @@
+Layer, M, N, K, Batch,
+gemm1, 16, 32, 8, 8,
+gemm2, 8, 16, 4, 8,

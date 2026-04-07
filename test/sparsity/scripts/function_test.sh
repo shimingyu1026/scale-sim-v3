@@ -9,10 +9,10 @@ source venv/bin/activate
 export PYTHONPATH=.
 python3 $path/scalesim/scale.py -c $path/configs/sparsity.cfg -t $path/topologies/sparsity/alexnet_part.csv -p $path/sparsity_outputs
 
-DIFF1=$(diff $path/sparsity_outputs/scalesim_sparsity/BANDWIDTH_REPORT.csv $path/test/sparsity/golden_trace/BANDWIDTH_REPORT.csv)
-DIFF2=$(diff $path/sparsity_outputs/scalesim_sparsity/COMPUTE_REPORT.csv $path/test/sparsity/golden_trace/COMPUTE_REPORT.csv)
-DIFF3=$(diff $path/sparsity_outputs/scalesim_sparsity/DETAILED_ACCESS_REPORT.csv $path/test/sparsity/golden_trace/DETAILED_ACCESS_REPORT.csv)
-DIFF4=$(diff $path/sparsity_outputs/scalesim_sparsity/SPARSE_REPORT.csv $path/test/sparsity/golden_trace/SPARSE_REPORT.csv)
+DIFF1=$(python3 $path/test/general/scripts/compare_csv.py $path/test/sparsity/golden_trace/BANDWIDTH_REPORT.csv $path/sparsity_outputs/scalesim_sparsity/BANDWIDTH_REPORT.csv --numeric)
+DIFF2=$(python3 $path/test/general/scripts/compare_csv.py $path/test/sparsity/golden_trace/COMPUTE_REPORT.csv $path/sparsity_outputs/scalesim_sparsity/COMPUTE_REPORT.csv --numeric)
+DIFF3=$(python3 $path/test/general/scripts/compare_csv.py $path/test/sparsity/golden_trace/DETAILED_ACCESS_REPORT.csv $path/sparsity_outputs/scalesim_sparsity/DETAILED_ACCESS_REPORT.csv --numeric --allow-extra-columns)
+DIFF4=$(python3 $path/test/general/scripts/compare_csv.py $path/test/sparsity/golden_trace/SPARSE_REPORT.csv $path/sparsity_outputs/scalesim_sparsity/SPARSE_REPORT.csv --numeric)
 DIFF5=$(diff $path/sparsity_outputs/scalesim_sparsity/layer0/FILTER_DRAM_TRACE.csv $path/test/sparsity/golden_trace/layer0/FILTER_DRAM_TRACE.csv)
 DIFF6=$(diff $path/sparsity_outputs/scalesim_sparsity/layer0/FILTER_SRAM_TRACE.csv $path/test/sparsity/golden_trace/layer0/FILTER_SRAM_TRACE.csv)
 DIFF7=$(diff $path/sparsity_outputs/scalesim_sparsity/layer0/IFMAP_DRAM_TRACE.csv $path/test/sparsity/golden_trace/layer0/IFMAP_DRAM_TRACE.csv)

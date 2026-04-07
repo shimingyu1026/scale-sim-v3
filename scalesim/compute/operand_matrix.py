@@ -37,6 +37,7 @@ class operand_matrix(object):
 
         #  Derived hyper parameters
         self.ofmap_px_per_filt, self.conv_window_size = 1, 1
+        self.batched_ofmap_px_per_filt = 1
         self.ofmap_rows, self.ofmap_cols = 1, 1
 
         # Offsets
@@ -44,13 +45,13 @@ class operand_matrix(object):
         self.matrix_offset_arr = [0, 10000000, 20000000]
 
         # Address matrices
-        self.ifmap_addr_matrix = np.ones((self.ofmap_px_per_filt, self.conv_window_size), dtype=int)
+        self.ifmap_addr_matrix = np.ones((self.batched_ofmap_px_per_filt, self.conv_window_size), dtype=int)
         self.filter_addr_matrix = np.ones((self.conv_window_size, self.num_filters), dtype=int)
-        self.ofmap_addr_matrix = np.ones((self.ofmap_px_per_filt, self.num_filters), dtype=int)
+        self.ofmap_addr_matrix = np.ones((self.batched_ofmap_px_per_filt, self.num_filters), dtype=int)
 
         # Sparsity matrices
         self.sparse_filter_array = np.ones((self.conv_window_size, self.num_filters), dtype=int)
-        self.ifmap_addr_matrix_original = np.ones((self.ofmap_px_per_filt, self.conv_window_size), dtype=int)
+        self.ifmap_addr_matrix_original = np.ones((self.batched_ofmap_px_per_filt, self.conv_window_size), dtype=int)
 
         # Flags
         self.params_set_flag = False
@@ -95,20 +96,14 @@ class operand_matrix(object):
         #if len(layer_hyper_param_arr) == 8:
         #    self.col_stride = layer_hyper_param_arr[7]
 
-        # TODO: Anand
-        # TODO: Next release
-        # TODO: Add an option for batching
-        self.batch_size = 1
-
-        # TODO: Marked for cleanup
-        #if len(layer_hyper_param_arr) == 9:
-        #    self.batch_size = layer_hyper_param_arr[8]
+        self.batch_size = self.topoutil.get_layer_batch_size(self.layer_id)
 
         # Assign the calculated hyper parameters
         self.ofmap_rows, self.ofmap_cols = self.topoutil.get_layer_ofmap_dims(self.layer_id)
         self.ofmap_rows = int(self.ofmap_rows)
         self.ofmap_cols = int(self.ofmap_cols)
         self.ofmap_px_per_filt = int(self.ofmap_rows * self.ofmap_cols)
+        self.batched_ofmap_px_per_filt = int(self.batch_size * self.ofmap_px_per_filt)
         self.conv_window_size = int(self.topoutil.get_layer_window_size(self.layer_id))
 
         # Assign the offsets
@@ -117,10 +112,14 @@ class operand_matrix(object):
 
         # Address matrices: This is needed to take into account the updated dimensions
         self.ifmap_addr_matrix = \
-            np.ones((self.ofmap_px_per_filt * self.batch_size, self.conv_window_size), dtype='>i4')
+            np.ones((self.batched_ofmap_px_per_filt, self.conv_window_size), dtype='>i4')
         self.filter_addr_matrix = np.ones((self.conv_window_size, self.num_filters), dtype='>i4')
-        self.ofmap_addr_matrix = np.ones((self.ofmap_px_per_filt, self.num_filters), dtype='>i4')
+        self.ofmap_addr_matrix = np.ones((self.batched_ofmap_px_per_filt, self.num_filters), dtype='>i4')
+        self.sparse_filter_array = np.ones((self.conv_window_size, self.num_filters), dtype=int)
+        self.ifmap_addr_matrix_original = \
+            np.ones((self.batched_ofmap_px_per_filt, self.conv_window_size), dtype='>i4')
         self.params_set_flag = True
+        self.matrices_ready_flag = False
 
         # TODO: This should be called from top level
         # TODO: Implement get() function for getting the matrix
@@ -170,7 +169,7 @@ class operand_matrix(object):
             print(message)
             return -1
 
-        row_indices = np.arange(self.batch_size * self.ofmap_px_per_filt)
+        row_indices = np.arange(self.batched_ofmap_px_per_filt)
         col_indices = np.arange(self.conv_window_size)
 
         # Create 2D index arrays using meshgrid
@@ -204,10 +203,14 @@ class operand_matrix(object):
         c_stride = self.col_stride
         Ew = self.ofmap_cols
         channel = self.num_input_channels
+        ofmap_px_per_filt = self.ofmap_px_per_filt
+        ifmap_sample_size = ifmap_rows * ifmap_cols * channel
 
-        ofmap_row, ofmap_col = np.divmod(i, Ew)
+        batch_idx, sample_ofmap_idx = np.divmod(i, ofmap_px_per_filt)
+        ofmap_row, ofmap_col = np.divmod(sample_ofmap_idx, Ew)
         i_row, i_col = ofmap_row * r_stride, ofmap_col * c_stride
         window_addr = (i_row * ifmap_cols + i_col) * channel
+        sample_base = batch_idx * ifmap_sample_size
 
         c_row, k = np.divmod(j, filter_col * channel)
         c_col, c_ch = np.divmod(k, channel)
@@ -217,7 +220,8 @@ class operand_matrix(object):
         if valid_indices.any():
             internal_address = (c_row[valid_indices] * ifmap_cols + c_col[valid_indices]) * \
                                channel + c_ch[valid_indices]
-            ifmap_px_addr[valid_indices] = internal_address + window_addr[valid_indices] + offset
+            ifmap_px_addr[valid_indices] = internal_address + window_addr[valid_indices] + \
+                                           sample_base[valid_indices] + offset
 
         return ifmap_px_addr
 
@@ -233,7 +237,7 @@ class operand_matrix(object):
             print(message)
             return -1
 
-        row_indices = np.expand_dims(np.arange(self.ofmap_px_per_filt), axis=1)
+        row_indices = np.expand_dims(np.arange(self.batched_ofmap_px_per_filt), axis=1)
         # if self.config.sparsity_support:
         #     _, col_indices = np.unique(np.array(self.filter_addr_matrix[0]), return_inverse=True)
         # else:
@@ -388,7 +392,7 @@ class operand_matrix(object):
         code.
         """
         if num_rows == -1:
-            num_rows = self.ofmap_px_per_filt
+            num_rows = self.batched_ofmap_px_per_filt
         if num_cols == -1:
             num_cols = self.conv_window_size
         my_name = 'operand_matrix.get_ifmap_matrix_part(): '
@@ -400,7 +404,7 @@ class operand_matrix(object):
                 message = err_prefix + ": Parameters not set yet. Run set_params(). Exiting!"
                 print(message)
                 return -1, np.zeros((1, 1))
-        if (start_row + num_rows) > self.ofmap_px_per_filt or \
+        if (start_row + num_rows) > self.batched_ofmap_px_per_filt or \
            (start_col + num_cols) > self.conv_window_size:
             message = err_prefix + ": Illegal arguments. Exiting!"
             print(message)
@@ -647,7 +651,7 @@ class operand_matrix(object):
         # Since we cannot pass self as an argument in the member functions
         # This is an alternate way of making the matrix dimensions as defaults
         if num_rows == -1:
-            num_rows = self.ofmap_px_per_filt
+            num_rows = self.batched_ofmap_px_per_filt
         if num_cols == -1:
             num_cols = self.num_filters
         my_name = 'operand_matrix.get_ofmap_matrix_part(): '
@@ -659,7 +663,7 @@ class operand_matrix(object):
                 message = err_prefix + ": Parameters not set yet. Run set_params(). Exiting!"
                 print(message)
                 return -1, np.zeros((1, 1))
-        if (start_row + num_rows) > self.ofmap_px_per_filt or \
+        if (start_row + num_rows) > self.batched_ofmap_px_per_filt or \
            (start_col + num_cols) > self.num_filters:
             message = err_prefix + ": Illegal arguments. Exiting!"
             print(message)
