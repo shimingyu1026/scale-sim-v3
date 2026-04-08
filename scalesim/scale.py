@@ -40,7 +40,7 @@ if __name__ == '__main__':
     config = args.c
     logpath = args.p
     inp_type = args.i
-    save_trace = args.s
+    save_trace = args.s.strip().upper()
 
     GEMM_INPUT = False
     if inp_type == 'gemm':
@@ -52,7 +52,7 @@ if __name__ == '__main__':
         save_space = True
    
 
-    s = scalesim(save_disk_space=False,
+    s = scalesim(save_disk_space=save_space,
                  verbose=True,
                  config=config,
                  topology=topology,

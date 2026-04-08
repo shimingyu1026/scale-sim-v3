@@ -28,6 +28,7 @@ test*
 !test/test_topology_utils_batch.py
 !test/test_report_batch.py
 !test/test_phase10_smoke.py
+!test/test_cli_save_trace.py
 configs_test
 benchmark_results
 .venv/
